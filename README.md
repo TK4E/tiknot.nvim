@@ -25,22 +25,34 @@ Plug 'tamago324/tiknot.nvim'
 ## Configuration
 
 ```lua
-require'tiknot'.setup {
-  hide_on_winleave = true,
+require('tiknot').setup {
+    hide_on_winleave = true,
+    on_open = 'auto',
+    shell = 'zsh',
+    win = {
+        relative = 'cursor',
+        width = 40,
+        height = 15,
+        col = 10,
+        row = 3,
+        focusable = true,
+        style = 'minimal',
+        border = 'shadow'
+    },
 
-  on_open = function(state)
-    vim.api.nvim_buf_set_keymap(
-      state.buf,
-      'n', 'si', '<Cmd>lua require"tiknot".hide()<CR>',
-      { noremap = true, silent = true }
-    )
-  end
+    key = {
+        hide = '<F7>',
+        exit = 'qq',
+        terminal = '<c-t>',
+    },
 
 }
 
 vim.api.nvim_set_keymap(
-  'n', 'si', '<Cmd>lua require"tiknot".open()<CR>',
-  { noremap = true, silent = true }
+    'n',
+    '<F7>',
+    '<Cmd>lua require"tiknot".open()<CR>',
+    {noremap = true, silent = true}
 )
 ```
 

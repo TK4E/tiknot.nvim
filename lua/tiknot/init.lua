@@ -23,36 +23,20 @@ M.hide = function()
 end
 
 M.open = function()
-
-    state.change = false
-
     if (state.tmp == nil) then state.tmp = os.tmpname() end
 
     if (state.buf == nil) then
-        -- Create a new buffer
+        -- Create a new buffer.
         state.buf = a.nvim_create_buf(false, true)
-
-        -- a.nvim_buf_set_name(state.buf, 'tiknot')
+        a.nvim_buf_set_name(state.buf, 'tiknot')
     end
 
-    if a.nvim_buf_is_valid(state.buf) == false then
-        state.buf = a.nvim_create_buf(false, true)
-    end
-
+    -- Open a new window.
     state.win = a.nvim_open_win(state.buf, true, config.values.win)
-
-    if (g.TikNot == 0) then
-        -- Read text from file after used terminal
-        a.nvim_put(state.text, '', false, true)
-
-        g.TikNot = 1
-    end
-
-    a.nvim_exec([[
-        setlocal winhl=Normal:TikNotNormal,EndOfBuffer:TikNotNormal
-        setlocal cursorline
-        setlocal number
-    ]], false)
+    a.nvim_set_option_value("cursorline",1,{})
+    a.nvim_set_option_value("number",1,{} )
+    tmp = a.nvim_get_hl_by_name("Normal", "rgb")
+    a.nvim_set_hl(0, "NormalFloat", {bg=tmp.bg}) -- Reset background color.
 
     if (config.values.hide_on_winleave) then
         a.nvim_exec([[
@@ -66,30 +50,44 @@ M.open = function()
     -- LuaFormatter off
     if (config.values.key.exit) then
         a.nvim_buf_set_keymap(
-        state.buf, 'n', config.values.key.exit,
-        '<Cmd>:bw | :lua require"tiknot".hide()<CR>', opts)
+            state.buf,
+            'n',
+            config.values.key.exit,
+            '<Cmd>:bw | :lua require"tiknot".hide()<CR>',
+            opts
+        )
     end
 
-    if type(config.values.on_open) == 'function' then
+    if type(config.values.on_open) == 'function'
+        then
         config.values.on_open(state)
-    elseif (config.values.on_open) == 'auto' then
+    elseif (config.values.on_open) == 'auto'
+        then
         a.nvim_buf_set_keymap(
-        state.buf, 'n', config.values.key.hide,
-        '<Cmd>:lua require"tiknot".hide()<CR>', opts)
-
+            state.buf,
+            'n',
+            config.values.key.hide,
+            '<Cmd>:lua require"tiknot".hide()<CR>',
+            opts
+        )
     end
 
-    if (config.values.terminal == true) then
+    if (config.values.terminal == true)
+        then
+        -- Clear buffer
         a.nvim_buf_set_keymap(
-        state.buf, 'n', config.values.key.terminal,
-        '<Cmd>:%d | :let g:TikNot=0 | :set nonu | :e term://' .. config.values.shell .. '<CR>',
-        opts) -- Clear buffer when open terminal.
+            state.buf,
+            'n',
+            config.values.key.terminal,
+            '<Cmd>:%d | :let g:TikNot=0 | :set nonu | :e term://' .. config.values.shell .. '<CR>',
+            opts
+        )
     end
     -- LuaFormatter on
 
     state.text = buffer_to_lines(state.buf)
-
     write_to_file(state.tmp, lines_to_string(state.text))
+
 end
 
 function buffer_to_lines(buffer)

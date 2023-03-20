@@ -13,11 +13,11 @@ local defaults_values = {
         style = 'minimal',
         border = 'shadow'
     },
-    -- key = {
-    -- hide = '<F7>',
-    -- exit = 'qq',
-    -- terminal = '<c-t>',
-    -- },
+    key = {
+        hide = '<F7>',
+        exit = 'qq',
+        terminal = '<c-t>',
+    },
 }
 
 local config = {}
